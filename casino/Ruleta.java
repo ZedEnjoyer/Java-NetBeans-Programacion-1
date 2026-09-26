@@ -44,8 +44,10 @@ public class Ruleta extends Juego{
         int numero = random.nextInt(37);
         double premio = 0;
         
-        if (errorApuesta(jugador) != null) {
-            return errorApuesta(jugador);
+        try {
+            errorApuesta(jugador); 
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
         }
         
         switch (tipoApuesta) {

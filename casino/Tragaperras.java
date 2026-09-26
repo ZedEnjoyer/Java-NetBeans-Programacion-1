@@ -29,8 +29,10 @@ public class Tragaperras extends Juego {
     @Override
     public String jugar(Jugador jugador) {
 
-        if (errorApuesta(jugador) != null) {
-            return errorApuesta(jugador);
+        try {
+            errorApuesta(jugador); 
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
         }
 
         a = random.nextInt(10);

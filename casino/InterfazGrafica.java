@@ -284,15 +284,6 @@ public class InterfazGrafica extends javax.swing.JFrame {
     if (juego.equals("Ruleta")) {
         jLabel6.setVisible(true);
         selectorRuleta.setVisible(true);
-
-        if (seleccionRuleta.equals("Numero")) {
-            jLabel7.setVisible(true);
-            campoNumero.setVisible(true);
-        } else {
-            jLabel7.setVisible(false);
-            campoNumero.setVisible(false);
-        }
-
     } else {
         jLabel6.setVisible(false);
         selectorRuleta.setVisible(false);
@@ -300,6 +291,14 @@ public class InterfazGrafica extends javax.swing.JFrame {
         campoNumero.setVisible(false);
     }
     
+    if (seleccionRuleta.equals("Numero")) {
+        jLabel7.setVisible(true);
+        campoNumero.setVisible(true);
+    } else {
+        jLabel7.setVisible(false);
+        campoNumero.setVisible(false);
+    }
+
     
     }//GEN-LAST:event_selectorJuegoActionPerformed
 

@@ -33,8 +33,10 @@ public class Dado extends Juego{
         int suma = dado1 + dado2;
         double premio = ganancia();
         
-        if (errorApuesta(jugador) != null) {
-            return errorApuesta(jugador);
+        try {
+            errorApuesta(jugador); 
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
         }
 
         repartirPremio(jugador, premio);
