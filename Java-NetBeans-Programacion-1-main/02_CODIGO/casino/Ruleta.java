@@ -1,71 +1,45 @@
 import java.util.Random;
 
-public class Ruleta extends Juego{
+public class Ruleta extends Juego {
+
     private Random random = new Random();
-    private String tipoApuesta;
-    private int numApuesta;
-    boolean gana=false;
-    
-    public Ruleta(String tipoApuesta,double apuesta) {
+    private EstrategiaRuleta estrategia;
+    private boolean gana = false;
+
+    public Ruleta(EstrategiaRuleta estrategia, double apuesta) {
         super(apuesta);
-        this.tipoApuesta = tipoApuesta;
+        this.estrategia = estrategia;
     }
 
-    public Ruleta(String tipoApuesta,int apuesta, int numApuesta) {
-        super(apuesta);
-        this.tipoApuesta = tipoApuesta;
-        this.numApuesta = numApuesta;
-    }
-    
     @Override
     public double ganancia() {
-        switch (tipoApuesta) {
-            case "par":
-            case "impar":
-                return apuesta+apuesta*.5;
-            default:
-                return apuesta+apuesta*10;
-        }
+        return estrategia.calcularPremio(apuesta);
     }
-    
+
     @Override
     public String jugar(Jugador jugador) {
-        gana=false;
-        int numero = random.nextInt(37);
-        double premio = 0;
-        
+
         try {
-            errorApuesta(jugador); 
+            errorApuesta(jugador);
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
-        
-        switch (tipoApuesta) {
-            case "par":
-                if(numero%2==0){
-                    gana = true;
-                    premio = ganancia();
-                }
-                break;
-                
-            case "impar":
-                if(numero%2!=0){
-                    gana = true;
-                    premio = ganancia();
-                }
-                break;
-                
-            default:
-                if(numero == numApuesta){
-                    gana = true;
-                    premio = ganancia();
-                }
-                break;
+
+        gana = false;
+
+        int numero = random.nextInt(37);
+        double premio = 0;
+
+        if (estrategia.esGanadora(numero)) {
+            gana = true;
+            premio = ganancia();
         }
 
-       
-        repartirPremio(jugador,premio);
-        return "RULETA | Salió: " + numero + "\n"+ (gana ? "¡Ganaste! Premio: $" + premio : "Perdiste la apuesta.");
+        repartirPremio(jugador, premio);
 
+        return "RULETA | Salió: " + numero + "\n"
+                + (gana
+                ? "¡Ganaste! Premio: $" + premio
+                : "Perdiste la apuesta.");
     }
 }

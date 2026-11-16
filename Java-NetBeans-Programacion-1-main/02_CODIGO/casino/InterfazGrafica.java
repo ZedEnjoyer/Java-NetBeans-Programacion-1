@@ -286,8 +286,7 @@ resultadosTxt.setText(resultado);
     double saldo = Double.parseDouble(campoSaldo.getText());
     Jugador jugador = casino.crearJugador(nombre, saldo);
 
-    selectorUsuarios.addItem(jugador.getNombre());selectorUsuarios.setSelectedIndex(
-    selectorUsuarios.getItemCount() - 1);
+    selectorUsuarios.addItem(jugador.getNombre());selectorUsuarios.setSelectedIndex(selectorUsuarios.getItemCount() - 1);
 
     campoNombre.setText("");
     campoSaldo.setText("");resultadosTxt.setText("El jugador ha sido creado\n"+"Jugador: "+jugador.getNombre()+"\nSaldo: "+jugador.getDinero());
