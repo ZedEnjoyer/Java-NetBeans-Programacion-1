@@ -1,45 +1,31 @@
 import java.util.Random;
 
 public class Ruleta extends Juego {
-
-    private Random random = new Random();
-    private EstrategiaRuleta estrategia;
-    private boolean gana = false;
+    private final Random random = new Random();
+    private final EstrategiaRuleta estrategia;
+    private int ultimoNumero;
 
     public Ruleta(EstrategiaRuleta estrategia, double apuesta) {
         super(apuesta);
+        if (estrategia == null) {
+            throw new IllegalArgumentException("Debes seleccionar un tipo de apuesta.");
+        }
         this.estrategia = estrategia;
     }
 
     @Override
-    public double ganancia() {
-        return estrategia.calcularPremio(apuesta);
+    protected double ejecutarRonda() {
+        ultimoNumero = random.nextInt(37);
+        return estrategia.esGanadora(ultimoNumero)
+                ? estrategia.calcularPremio(apuesta)
+                : 0;
     }
 
     @Override
-    public String jugar(Jugador jugador) {
-
-        try {
-            errorApuesta(jugador);
-        } catch (IllegalArgumentException e) {
-            return e.getMessage();
-        }
-
-        gana = false;
-
-        int numero = random.nextInt(37);
-        double premio = 0;
-
-        if (estrategia.esGanadora(numero)) {
-            gana = true;
-            premio = ganancia();
-        }
-
-        repartirPremio(jugador, premio);
-
-        return "RULETA | Salió: " + numero + "\n"
-                + (gana
-                ? "¡Ganaste! Premio: $" + premio
-                : "Perdiste la apuesta.");
+    protected String formatearResultado(double premio) {
+        String encabezado = "RULETA | Salió: " + ultimoNumero + "\n";
+        return (premio > 0)
+                ? encabezado + "¡Ganaste! Premio: $" + premio
+                : encabezado + "Perdiste la apuesta.";
     }
 }

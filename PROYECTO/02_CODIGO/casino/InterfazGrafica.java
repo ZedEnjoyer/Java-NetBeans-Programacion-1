@@ -23,6 +23,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
         jLabel7.setVisible(false);
         campoNumero.setVisible(false);
+        selectorRuleta.addActionListener(this::selectorRuletaActionPerformed);
     }
 
     /**
@@ -249,81 +250,100 @@ public class InterfazGrafica extends javax.swing.JFrame {
     }//GEN-LAST:event_campoSaldoActionPerformed
 
     private void jugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jugarActionPerformed
-    String seleccion = selectorJuego.getSelectedItem().toString();
-    int apuesta = Integer.parseInt(campoApuesta.getText());
-    jg = jugadores.get(selectorUsuarios.getSelectedIndex());
-    Juego juego = null;
-    
-    switch (seleccion) {
-        case "Ruleta":
-            String seleccionRuleta = selectorRuleta.getSelectedItem().toString();
-            if (seleccionRuleta.equals("Par")|| seleccionRuleta.equals("Impar")) {
-                juego = new Ruleta(seleccionRuleta.toLowerCase(), apuesta);
-            } else {
-                int numero = Integer.parseInt(campoNumero.getText());
-                juego = new Ruleta("numero", apuesta, numero);
+        try {
+            int indiceJugador = selectorUsuarios.getSelectedIndex();
+            if (indiceJugador < 0 || indiceJugador >= jugadores.size()) {
+                throw new IllegalArgumentException("Primero debes crear y seleccionar un jugador.");
             }
-            break;
 
-        case "Tragaperras":
-            juego = new Tragaperras(apuesta);
-            break;
+            String seleccion = (String) selectorJuego.getSelectedItem();
+            double apuesta = Double.parseDouble(campoApuesta.getText().trim());
+            jg = jugadores.get(indiceJugador);
+            Juego juego;
 
-        case "Dado":
-            juego = new Dado(apuesta);
-            break;
-    }
+            switch (seleccion) {
+                case "Ruleta":
+                    String tipo = ((String) selectorRuleta.getSelectedItem()).toLowerCase();
+                    if ("numero".equals(tipo)) {
+                        int numero = Integer.parseInt(campoNumero.getText().trim());
+                        juego = new Ruleta(tipo, apuesta, numero);
+                    } else {
+                        juego = new Ruleta(tipo, apuesta);
+                    }
+                    break;
+                case "Tragaperras":
+                    juego = new Tragaperras(apuesta);
+                    break;
+                case "Dado":
+                    juego = new Dado(apuesta);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Selecciona un juego valido.");
+            }
 
-    resultadosTxt.setText(juego.jugar(jg)+"\nSaldo disponible: "+jg.getDinero());
+            resultadosTxt.setText(juego.jugar(jg) + "\nSaldo disponible: " + jg.getDinero());
+        } catch (NumberFormatException ex) {
+            mostrarError("Ingresa una apuesta valida y, para la ruleta por numero, un entero entre 0 y 36.");
+        } catch (IllegalArgumentException ex) {
+            mostrarError(ex.getMessage());
+        }
     }//GEN-LAST:event_jugarActionPerformed
 
     private void selectorJuegoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectorJuegoActionPerformed
-    String juego = selectorJuego.getSelectedItem().toString();
-    String seleccionRuleta = selectorRuleta.getSelectedItem().toString();
-
-    if (juego.equals("Ruleta")) {
-        jLabel6.setVisible(true);
-        selectorRuleta.setVisible(true);
-    } else {
-        jLabel6.setVisible(false);
-        selectorRuleta.setVisible(false);
-        jLabel7.setVisible(false);
-        campoNumero.setVisible(false);
-    }
-    
-    if (seleccionRuleta.equals("Numero")) {
-        jLabel7.setVisible(true);
-        campoNumero.setVisible(true);
-    } else {
-        jLabel7.setVisible(false);
-        campoNumero.setVisible(false);
-    }
-
-    
+        actualizarControlesRuleta();
     }//GEN-LAST:event_selectorJuegoActionPerformed
 
     private void crearUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crearUsuarioActionPerformed
-        String nombre = campoNombre.getText();
-        double saldo = Integer.parseInt(campoSaldo.getText());
-        
-        jg= new Jugador(nombre, saldo);
-        jugadores.add(jg);
-        selectorUsuarios.addItem(jg.getNombre());
-        selectorUsuarios.setSelectedIndex(jugadores.size() - 1);
-        campoNombre.setText("");
-        campoSaldo.setText("");
-        resultadosTxt.setText("el jugador ha sido creado \n"+"jugador: "+jg.getNombre()+" saldo: "+jg.getDinero());
-        
-        
+        try {
+            String nombre = campoNombre.getText();
+            double saldo = Double.parseDouble(campoSaldo.getText().trim());
+            jg = new Jugador(nombre, saldo);
+            jugadores.add(jg);
+            selectorUsuarios.addItem(jg.getNombre());
+            selectorUsuarios.setSelectedIndex(jugadores.size() - 1);
+            campoNombre.setText("");
+            campoSaldo.setText("");
+            resultadosTxt.setText("El jugador ha sido creado\nJugador: " + jg.getNombre()
+                    + "\nSaldo: " + jg.getDinero());
+        } catch (NumberFormatException ex) {
+            mostrarError("Ingresa un saldo numerico valido.");
+        } catch (IllegalArgumentException ex) {
+            mostrarError(ex.getMessage());
+        }
     }//GEN-LAST:event_crearUsuarioActionPerformed
 
     private void estadisticasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_estadisticasActionPerformed
-        // TODO add your handling code here:
+        int indice = selectorUsuarios.getSelectedIndex();
+        if (indice < 0 || indice >= jugadores.size()) {
+            mostrarError("Primero debes crear y seleccionar un jugador.");
+            return;
+        }
+
+        jg = jugadores.get(indice);
+        resultadosTxt.setText("Jugador: " + jg.getNombre()
+                + "\nSaldo disponible: $" + jg.getDinero());
     }//GEN-LAST:event_estadisticasActionPerformed
 
     private void selectorUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectorUsuariosActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_selectorUsuariosActionPerformed
+
+    private void selectorRuletaActionPerformed(java.awt.event.ActionEvent evt) {
+        actualizarControlesRuleta();
+    }
+
+    private void actualizarControlesRuleta() {
+        boolean esRuleta = "Ruleta".equals(selectorJuego.getSelectedItem());
+        boolean esNumero = esRuleta && "Numero".equals(selectorRuleta.getSelectedItem());
+        jLabel6.setVisible(esRuleta);
+        selectorRuleta.setVisible(esRuleta);
+        jLabel7.setVisible(esNumero);
+        campoNumero.setVisible(esNumero);
+    }
+
+    private void mostrarError(String mensaje) {
+        javax.swing.JOptionPane.showMessageDialog(
+                this, mensaje, "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+    }
 
     /**
      * @param args the command line arguments

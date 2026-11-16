@@ -1,40 +1,26 @@
 import java.util.Random;
 
-public class Dado extends Juego{
-    private Random random = new Random();
-    private int dado1, dado2;
+public class Dado extends Juego {
+    private final Random random = new Random();
+    private int dado1;
+    private int dado2;
 
     public Dado(double apuesta) {
         super(apuesta);
     }
-    
+
     @Override
-    public double ganancia() {
-        if (dado1 + dado2 == 7) {
-            return apuesta * 5;
-        }
-        return 0;
+    protected double ejecutarRonda() {
+        dado1 = random.nextInt(6) + 1;
+        dado2 = random.nextInt(6) + 1;
+        return (dado1 + dado2 == 7) ? apuesta * 5 : 0;
     }
 
     @Override
-    public String jugar(Jugador jugador) {
-        dado1 = random.nextInt(6) + 1;
-        dado2 = random.nextInt(6) + 1;
-        int suma = dado1 + dado2;
-        double premio = ganancia();
-        
-        try {
-            errorApuesta(jugador); 
-        } catch (IllegalArgumentException e) {
-            return e.getMessage();
-        }
-
-        repartirPremio(jugador, premio);
-
-        if (suma == 7) {
-            return "DADOS | ["+dado1+"] ["+dado2+"]"+"\n¡Ganaste! Premio: $" +premio;
-        }
-
-        return "DADOS | ["+dado1+"] ["+dado2+"]"+"\nPerdiste la apuesta :c";
+    protected String formatearResultado(double premio) {
+        String encabezado = "DADOS | [" + dado1 + "] [" + dado2 + "]\n";
+        return (premio > 0)
+                ? encabezado + "¡Ganaste! Premio: $" + premio
+                : encabezado + "Perdiste la apuesta :c";
     }
 }

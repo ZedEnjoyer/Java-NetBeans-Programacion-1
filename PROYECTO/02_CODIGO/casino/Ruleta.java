@@ -18,13 +18,25 @@ public class Ruleta extends Juego{
     
     public Ruleta(String tipoApuesta,double apuesta) {
         super(apuesta);
+        validarTipoApuesta(tipoApuesta);
         this.tipoApuesta = tipoApuesta;
     }
 
-    public Ruleta(String tipoApuesta,int apuesta, int numApuesta) {
+    public Ruleta(String tipoApuesta, double apuesta, int numApuesta) {
         super(apuesta);
+        validarTipoApuesta(tipoApuesta);
+        if (numApuesta < 0 || numApuesta > 36) {
+            throw new IllegalArgumentException("El numero debe estar entre 0 y 36.");
+        }
         this.tipoApuesta = tipoApuesta;
         this.numApuesta = numApuesta;
+    }
+
+    private void validarTipoApuesta(String tipoApuesta) {
+        if (!"par".equals(tipoApuesta) && !"impar".equals(tipoApuesta)
+                && !"numero".equals(tipoApuesta)) {
+            throw new IllegalArgumentException("Tipo de apuesta de ruleta no valido.");
+        }
     }
     
     @Override
@@ -41,18 +53,18 @@ public class Ruleta extends Juego{
     @Override
     public String jugar(Jugador jugador) {
         gana=false;
-        int numero = random.nextInt(37);
-        double premio = 0;
-        
         try {
             errorApuesta(jugador); 
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
+
+        int numero = random.nextInt(37);
+        double premio = 0;
         
         switch (tipoApuesta) {
             case "par":
-                if(numero%2==0){
+                if (numero != 0 && numero % 2 == 0) {
                     gana = true;
                     premio = ganancia();
                 }

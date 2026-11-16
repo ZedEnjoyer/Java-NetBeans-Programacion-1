@@ -24,18 +24,22 @@ public abstract class Juego implements ErrorApuesta{
 
     @Override
     public void errorApuesta(Jugador jugador) {
-        if (jugador == null){
+        if (jugador == null) {
             throw new IllegalArgumentException("Primero debes crear un jugador.");
         }
-        if (apuesta <= 0){
+        if (Double.isNaN(apuesta) || Double.isInfinite(apuesta) || apuesta <= 0) {
             throw new IllegalArgumentException("La apuesta debe ser mayor que cero.");
         }
-        if (apuesta > jugador.getDinero()){
+        if (apuesta > jugador.getDinero()) {
             throw new IllegalArgumentException("No tienes suficiente dinero.");
         }
     }
 
-    protected void repartirPremio(Jugador jugador,double premio) {
+    protected void repartirPremio(Jugador jugador, double premio) {
+        if (Double.isNaN(premio) || Double.isInfinite(premio) || premio < 0
+                || Double.isInfinite(jugador.getDinero() - apuesta + premio)) {
+            throw new IllegalArgumentException("El premio calculado no es valido.");
+        }
         jugador.restarDinero(apuesta);
         jugador.sumarDinero(premio);
         beneficio += apuesta - premio;

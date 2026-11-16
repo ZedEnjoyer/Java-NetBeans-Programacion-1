@@ -28,16 +28,16 @@ public class Dado extends Juego{
 
     @Override
     public String jugar(Jugador jugador) {
-        dado1 = random.nextInt(6) + 1;
-        dado2 = random.nextInt(6) + 1;
-        int suma = dado1 + dado2;
-        double premio = ganancia();
-        
         try {
             errorApuesta(jugador); 
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
+
+        dado1 = random.nextInt(6) + 1;
+        dado2 = random.nextInt(6) + 1;
+        int suma = dado1 + dado2;
+        double premio = ganancia();
 
         repartirPremio(jugador, premio);
 

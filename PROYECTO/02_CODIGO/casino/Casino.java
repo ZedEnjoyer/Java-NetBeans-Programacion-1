@@ -4,8 +4,6 @@
 
 package github.com.lilliaenjoyer.programacioni.casino;
 
-import java.util.Scanner;
-
 /**
  *
  * @author samue
@@ -13,7 +11,7 @@ import java.util.Scanner;
 public class Casino {
 
     public static void main(String[] args) {
-
+        java.awt.EventQueue.invokeLater(() -> new InterfazGrafica().setVisible(true));
     }
 }
 

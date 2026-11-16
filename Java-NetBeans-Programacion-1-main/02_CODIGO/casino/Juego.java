@@ -1,39 +1,42 @@
-public abstract class Juego implements ErrorApuesta{
-
-    protected double beneficio = 0;
-    protected double apuesta = 0;
+public abstract class Juego implements ErrorApuesta {
+    protected final double apuesta;
 
     public Juego(double apuesta) {
         this.apuesta = apuesta;
     }
-    
-    
-    public double getBeneficio() {
-        return beneficio;
+
+    // Contrato único (LSP): ejecuta la ronda y retorna el premio obtenido (0 si pierde)
+    protected abstract double ejecutarRonda();
+
+    // Contrato único (SRP): cada juego describe únicamente su resultado
+    protected abstract String formatearResultado(double premio);
+
+    public final String jugar(Jugador jugador) {
+        errorApuesta(jugador); // Propaga IllegalArgumentException hacia InterfazGrafica
+        double premio = ejecutarRonda();
+        repartirPremio(jugador, premio);
+        return formatearResultado(premio);
     }
 
     @Override
-    public void errorApuesta(Jugador jugador) {
-        if (jugador == null){
+    public void errorApuesta(Jugador jugador) throws IllegalArgumentException {
+        if (jugador == null) {
             throw new IllegalArgumentException("Primero debes crear un jugador.");
         }
-        if (apuesta <= 0){
-            throw new IllegalArgumentException("La apuesta debe ser mayor que cero.");
+        if (Double.isNaN(apuesta) || Double.isInfinite(apuesta) || apuesta <= 0) {
+            throw new IllegalArgumentException("La apuesta debe ser mayor a 0.");
         }
-        if (apuesta > jugador.getDinero()){
-            throw new IllegalArgumentException("No tienes suficiente dinero.");
+        if (jugador.getDinero() < apuesta) {
+            throw new IllegalArgumentException("Saldo insuficiente para realizar la apuesta.");
         }
     }
 
-    protected void repartirPremio(Jugador jugador,double premio) {
-        jugador.restarDinero(apuesta);
-        jugador.sumarDinero(premio);
-        beneficio += apuesta - premio;
+    protected void repartirPremio(Jugador jugador, double premio) {
+        if (Double.isNaN(premio) || Double.isInfinite(premio) || premio < 0
+                || Double.isInfinite(jugador.getDinero() - apuesta + premio)) {
+            throw new IllegalArgumentException("El premio calculado no es válido.");
+        }
+        jugador.apostar(apuesta);
+        jugador.abonarPremio(premio);
     }
-    
-    public abstract String jugar(Jugador jugador);
-    
-    public abstract double ganancia();
 }
-
-

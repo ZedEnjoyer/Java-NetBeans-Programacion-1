@@ -13,20 +13,30 @@ public class Jugador {
     private double dinero;
 
     public Jugador(String nombre, double dinero) {
-        this.nombre = nombre;
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre no puede estar vacio.");
+        }
+        if (Double.isNaN(dinero) || Double.isInfinite(dinero) || dinero < 0) {
+            throw new IllegalArgumentException("El saldo debe ser un numero valido y no negativo.");
+        }
+        this.nombre = nombre.trim();
         this.dinero = dinero;
     }
 
     public void sumarDinero(double cantidad) {
-        if (cantidad > 0){
-            dinero += cantidad;
+        if (Double.isNaN(cantidad) || Double.isInfinite(cantidad) || cantidad < 0
+                || Double.isInfinite(dinero + cantidad)) {
+            throw new IllegalArgumentException("El premio debe ser un numero valido y no negativo.");
         }
+        dinero += cantidad;
     }
 
     public void restarDinero(double cantidad) {
-        if (cantidad>0 && dinero>=cantidad){
-            dinero -= cantidad;
+        if (Double.isNaN(cantidad) || Double.isInfinite(cantidad)
+                || cantidad <= 0 || dinero < cantidad) {
+            throw new IllegalArgumentException("La apuesta no es valida para el saldo disponible.");
         }
+        dinero -= cantidad;
     }
 
     public String getNombre() {
@@ -38,7 +48,7 @@ public class Jugador {
     }
 
     public void getJugador(){
-        System.out.println("jugador creado, nombre: "+nombre+" saldo disponible: "+dinero);
+        System.out.println("jugador creado, nombre: " + nombre + " saldo disponible: " + dinero);
     }
 }
 
